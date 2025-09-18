@@ -125,7 +125,7 @@ def mark_ssml(input,emotion):
         model="gemini-2.5-flash",
         contents=f"""
                      You are an expert in Speech Synthesis Markup Language (SSML) and emotion-aware text-to-speech optimization. Your task is to transform a given sentence into enhanced SSML markup based on its emotion analysis scores.
-                     
+                     also introduce comma and fullstops where needed
                      **INPUT:**
                      - Sentence: "{input}"
                      - Emotion Analysis: {emotion}
