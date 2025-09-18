@@ -190,10 +190,11 @@
 
 
 
-from utils import generateaudio
+from utils import generateaudio_top, generateaudio_basic , generateaudio_basic_ssml
 import streamlit as st
 import io
-
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 # --- Streamlit UI Configuration ---
 st.set_page_config(
     page_title="Text-to-Speech Generator",
@@ -229,15 +230,34 @@ st.markdown('<div class="full-width-title">The Empathy Engine: Giving AI a Human
 
 # --- UI Elements ---
 # Text area for user input
-text_input = st.text_area("Enter text to convert to speech:", height=200,width=1200, placeholder="e.g., Hello, Streamlit!")
+input_text = st.text_area("Enter text to convert to speech:", height=200,width=1200, placeholder="e.g., Hello, Streamlit!")
 
 # Button to trigger audio generation
 if st.button("Generate Audio"):
-    if text_input.strip():
+    if input_text.strip():
         with st.spinner():
               # Check if the text input is not empty
-            generateaudio(text_input)
-            st.audio(r"C:\Users\rajgu\programming\darwix\output.mp3", format='audio/mp3')
+            # generateaudio(text_input)
+            with ThreadPoolExecutor() as executor:
+                futures = [
+                    executor.submit(generateaudio_top, input_text),
+                    executor.submit(generateaudio_basic, input_text),
+                    executor.submit(generateaudio_basic_ssml, input_text),
+                ]
+                for future in futures:
+                    try:
+                        future.result()  # will re-raise exception if one occurred
+                    except Exception as e:
+                        print(f"Error in one of the tasks: {e}")
+            st.markdown("top ttsmodel")            
+            st.audio(r"C:\Users\rajgu\programming\darwix\output_top.mp3", format='audio/mp3')
+            st.markdown("basic ttsmodel")
+            st.audio(r"C:\Users\rajgu\programming\darwix\output_basic.mp3", format='audio/mp3')
+            st.markdown("basic ttsmodel with ssml")
+            st.audio(r"C:\Users\rajgu\programming\darwix\output_basic_ssml.mp3", format='audio/mp3')
+            
+            
+
     else:
         st.warning("Please enter some text before generating audio.")
 
