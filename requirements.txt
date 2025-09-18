@@ -1,1 +1,7 @@
-google-cloud-texttospeech
+google-cloud-texttospeech==2.29.0
+google-genai
+streamlit==1.48.1
+dotenv==0.9.9
+huggingface-hub==0.34.4
+google-cloud==0.34.0
+google-genai==1.38.0
