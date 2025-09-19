@@ -1,72 +1,78 @@
-
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 from utils import (
-    generateaudio_basic,
-    generateaudio_top, 
-    generateaudio_basic_ssml,
-    generateaudio_gtts_emotion,
-    generateaudio_all_methods,
     getemotion,
+    generate_ssml_direct,
+    synthesize_basic,
+    synthesize_top,
+    generate_ssml_direct,
+    generateaudio_gtts_emotion,
+    synthesize_basic_ssml
 )
 
-def main():
-    print("🎭 Enhanced Emotion-Aware Text-to-Speech System")
-    print("=" * 50)
+app = FastAPI(
+    title="Enhanced Emotion-Aware TTS API",
+    description="FastAPI endpoints for emotion-aware TTS with SSML and gTTS",
+    version="1.0.0"
+)
 
-    while True:
-        print("\nChoose an option:")
-        print("1. Basic Google Cloud TTS")
-        print("2. Premium Google Cloud TTS (Chirp3-HD)")
-        print("3. SSML-Enhanced TTS (Direct Generation - No LLM)")
-        # print("4. Emotion-Aware gTTS with Audio Effects")
-        print("5. Generate All Methods")
-        print("0. Exit")
+class TextRequest(BaseModel):
+    text: str
 
-        choice = input("\nEnter your choice (0-7): ").strip()
+class EmotionResponse(BaseModel):
+    emotion: str
+    confidence: float
 
-        if choice == "0":
-            print("Goodbye! 👋")
-            break
+class SSMLRequest(BaseModel):
+    text: str
 
-        if choice in ["1", "2", "3", "4", "5"]:
-            text = input("\nEnter text to synthesize: ").strip()
-            if not text:
-                print("❌ Please enter some text.")
-                continue
+class TTSRequest(BaseModel):
+    text: str
+    method: str  # one of: basic, premium, ssml, gtts
 
-            print(f"\nProcessing: '{text}'")
+@app.post("/api/emotion", response_model=EmotionResponse)
+def analyze_emotion(req: TextRequest):
+    """Analyze and return dominant emotion"""
+    emotions = getemotion(req.text)
+    if not emotions:
+        return {"emotion": "neutral", "confidence": 0.0}
+    dominant = sorted(emotions, key=lambda x: x['score'], reverse=True)[0]
+    return {"emotion": dominant['label'], "confidence": dominant['score']}
 
-            try:
-                if choice == "1":
-                    print("🔊 Generating basic TTS...")
-                    generateaudio_basic(text)
+@app.post("/api/ssml", response_model=dict)
+async def generate_ssml(req: SSMLRequest):
+    """Generate SSML markup for the input text"""
+    emotions = getemotion(req.text)
+    ssml = generate_ssml_direct(req.text, emotions)
+    return {"ssml": ssml}
 
-                elif choice == "2":
-                    print("🔊 Generating premium TTS...")
-                    generateaudio_top(text)
-
-                elif choice == "3":
-                    print("🔊 Generating SSML-enhanced TTS (no LLM)...")
-                    generateaudio_basic_ssml(text)
-
-                # elif choice == "4":
-                #     print("🔊 Generating emotion-aware gTTS...")
-                #     generateaudio_gtts_emotion(text)
-
-                elif choice == "5":
-                    print("🔊 Generating all methods...")
-                    generateaudio_all_methods(text)
-
-                print("✅ Audio generation completed!")
-
-            except Exception as e:
-                print(f"❌ Error: {e}")
-
-       
-
-        
-
+@app.post("/api/synthesize")
+async def synthesize(req: TTSRequest):
+    """Synthesize audio via specified method"""
+    text = req.text
+    method = req.method.lower()
+    try:
+        if method == "basic":
+            synthesize_basic(text)
+            filename = "output_basic.mp3"
+        elif method == "premium":
+            synthesize_top(text)
+            filename = "output_top.mp3"
+        elif method == "ssml":
+            emotions = getemotion(text)
+            ssml = generate_ssml_direct(text, emotions)
+            synthesize_basic_ssml(ssml)
+            filename = "output_basic_ssml.mp3"
+        elif method == "gtts":
+            generateaudio_gtts_emotion(text)
+            filename = "output_gtts_emotion.mp3"
         else:
-            print("❌ Invalid choice. Please try again.")
+            raise HTTPException(status_code=400, detail="Invalid method")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == "__main__":
-    main()
+    return {"audio_file": filename}
+
+@app.get("/api/health")
+def health_check():
+    return {"status": "healthy"}
