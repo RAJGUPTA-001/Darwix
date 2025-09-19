@@ -1,8 +1,3 @@
-
-pip install requiremen.txt
-
-
-
 Emotion-Aware Text-to-Speech System
 An  AI-powered text-to-speech application that generates emotionally expressive audio by analyzing text sentiment and creating dynamic SSML (Speech Synthesis Markup Language) markup.
 
@@ -75,7 +70,7 @@ Text-to-Speech API
 
 Generative Language API (for Gemini)
 
-
+run through cli using                    python  "main2.py"  'your sample text'
 
 # Generate emotion-aware speech
 text = "I am absolutely thrilled about this amazing opportunity!"
