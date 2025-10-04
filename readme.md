@@ -23,15 +23,20 @@ Hugging Face account and API token
 Google Gemini API access
 
 Installation
+
+
 Clone the repository:
 
-bash
+```bash
 git clone https://github.com/RAJGUPTA-001/Darwix
+```
 
 Install dependencies:
 
-bash
+```bash
 pip install -r requirements.txt
+```
+
 Set up authentication:
 
 Google Cloud: Configure Application Default Credentials (ADC)
@@ -51,60 +56,99 @@ GEMINI_API_KEY=
 
 
 
+
+
 🔧 Configuration
+
+
 Google Cloud Setup
+
+
 Install Google Cloud CLI:
 
-bash
+```bash
 # Windows PowerShell
 (New-Object Net.WebClient).DownloadFile("https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe", "$env:Temp\GoogleCloudSDKInstaller.exe")
 & $env:Temp\GoogleCloudSDKInstaller.exe
+```
 Configure authentication:
 
-bash
+```bash
 gcloud auth application-default login
 gcloud auth application-default set-quota-project YOUR_PROJECT_ID
+```
+
+
 Enable required APIs:
 
 Text-to-Speech API
 
 Generative Language API (for Gemini)
 
-run through cli using                    python  "main2.py"  'your sample text'
+run through cli using
+```bash
+python  "main2.py"  'your sample text'
+```
+
 
 # Generate emotion-aware speech
-text = "I am absolutely thrilled about this amazing opportunity!"
-generateaudio_basic_ssml(text)
-Available Functions
-1. Emotion Detection
-python
-from utils import getemotion
 
-emotions = getemotion("I'm so excited!")
-# Returns: [{'label': 'joy', 'score': 0.8542}, {'label': 'love', 'score': 0.1234}]
-2. Basic Text-to-Speech
+text = "I am absolutely thrilled about this amazing opportunity!"
+
+
+generateaudio_basic_ssml(text)
+
+
+Available Functions
+
+
+1. Emotion Detection
+
+
 python
+```bash
+from utils import getemotion
+emotions = getemotion("I'm so excited!")
+```
+
+# Returns: [{'label': 'joy', 'score': 0.8542}, {'label': 'love', 'score': 0.1234}]
+
+
+2. Basic Text-to-Speech
+
+python
+```bash
 from utils import generateaudio_basic
 
 generateaudio_basic("Hello world!")
+
+```
 # Creates: output_basic.mp3
 3. Premium Voice Synthesis
 python
+```bash
 from utils import generateaudio_top
-
 generateaudio_top("Hello world!")
+```
+
 # Creates: output_top.mp3 (using premium Chirp3-HD voice)
 4. SSML-Enhanced Speech
-python
+
+
+```bash python
 from utils import generateaudio_basic_ssml
 
 generateaudio_basic_ssml("This is the best news ever!")
+```
 # Automatically detects emotion and generates enhanced SSML
 # Creates: output_basic_ssml.mp3
 🎯 How It Works
+
+
 1. Emotion Analysis Pipeline
 text
 Text Input → BERT Emotion Model → Emotion Scores → SSML Generation → Audio Output
+
 The system uses a fine-tuned BERT model to classify text into emotional categories:
 
 Joy, Love, Happiness → Higher pitch, faster rate, louder volume
@@ -188,12 +232,14 @@ SSML Features Used
 
 
 python
+```bash
 contents=f"""
 Your custom SSML generation instructions here...
 **Custom Rules:**
 - Apply <emphasis level="strong"> to technical terms
 - Use <break time="500ms"/> before code examples
 """
+```
 🔮 Future Enhancements
 Multi-language Support: Extend to non-English languages
 
@@ -206,3 +252,4 @@ Batch Processing: Handle multiple texts simultaneously
 Voice Cloning: Clone specific speaker characteristics
 
 Emotion Intensity Gradients: More nuanced parameter scaling
+
