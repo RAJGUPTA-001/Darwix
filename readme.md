@@ -13,7 +13,9 @@ Multiple Output Formats: Supports basic text, SSML-enhanced, and premium voice s
 Intensity-Based Modulation: Adjusts speech parameters (rate, pitch, volume) based on emotion confidence scores
 
 🚀 Quick Start
+
 Prerequisites
+
 python == 3.13.5
 
 Google Cloud Project with Text-to-Speech API enabled
@@ -50,8 +52,14 @@ Create a .env file:
 text
 
 googleapikey=
+
+
 GOOGLE_APPLICATION_CREDENTIALS = path to adc
+
+
 HUGGINGFACE_KEY=
+
+
 GEMINI_API_KEY=
 
 
@@ -65,9 +73,9 @@ Google Cloud Setup
 
 
 Install Google Cloud CLI:
-
-```bash
 # Windows PowerShell
+```bash
+
 (New-Object Net.WebClient).DownloadFile("https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe", "$env:Temp\GoogleCloudSDKInstaller.exe")
 & $env:Temp\GoogleCloudSDKInstaller.exe
 ```
@@ -124,14 +132,18 @@ generateaudio_basic("Hello world!")
 
 ```
 # Creates: output_basic.mp3
+
 3. Premium Voice Synthesis
+
 python
+
 ```bash
 from utils import generateaudio_top
 generateaudio_top("Hello world!")
 ```
 
 # Creates: output_top.mp3 (using premium Chirp3-HD voice)
+
 4. SSML-Enhanced Speech
 
 
@@ -140,13 +152,19 @@ from utils import generateaudio_basic_ssml
 
 generateaudio_basic_ssml("This is the best news ever!")
 ```
+
+
 # Automatically detects emotion and generates enhanced SSML
 # Creates: output_basic_ssml.mp3
-🎯 How It Works
 
 
-1. Emotion Analysis Pipeline
+# 🎯 How It Works
+
+
+## 1. Emotion Analysis Pipeline
+
 text
+
 Text Input → BERT Emotion Model → Emotion Scores → SSML Generation → Audio Output
 
 The system uses a fine-tuned BERT model to classify text into emotional categories:
@@ -161,7 +179,8 @@ Surprise → Higher pitch, very fast rate
 
 Neutral → Standard parameters
 
-2. SSML Enhancement Rules
+## 2. SSML Enhancement Rules
+
 The system applies sophisticated SSML markup based on emotion scores:
 
 High Confidence (>0.7):
@@ -182,22 +201,36 @@ Low Confidence (<0.3):
 
 Subtle parameter changes only
 
-3. Voice Selection
+## 3. Voice Selection
+
 Function	Voice Model	Characteristics
+
 generateaudio_basic	Female SSML Voice	Standard neural voice
+
 generateaudio_top	Chirp3-HD-Achernar	Premium natural female voice
+
 generateaudio_basic_ssml	Neural2-F	SSML-optimized neural voice
+
+
 📁 Project Structure
-text
+
+
 emotion-tts-system/
+
 ├── main.py              # Main application entry point
+
 ├── utils.py             # Core utility functions
+
 ├── requirements.txt     # Python dependencies
+
 ├── README.md           # This documentation
+
 ├── .env                # Environment variables (create this)
 
-🔍 Technical Details
+## 🔍 Technical Details
+
 Dependencies
+
 google-cloud-texttospeech: Google's TTS API client
 
 huggingface-hub: Access to emotion classification models
@@ -207,6 +240,7 @@ google-genai: Google Gemini API client
 python-dotenv: Environment variable management
 
 Emotion Model
+
 Model: boltuix/bert-emotion
 
 Architecture: Fine-tuned BERT for emotion classification
@@ -216,6 +250,7 @@ Output: 13+ emotion categories with confidence scores
 Threshold: Only emotions with scores >0.05 are considered
 
 SSML Features Used
+
 <prosody>: Rate, pitch, and volume control
 
 <emphasis>: Strong and moderate emphasis levels
